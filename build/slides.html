@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>RFM-кейс · неделя 2 · уровень 3</title>
+<style>/* Токены bcc insurance (design system: tokens.json) */
+@font-face { font-family: Inter; src: url(../assets/fonts/Inter-Medium.woff2) format("woff2"); font-weight: 500; }
+@font-face { font-family: Inter; src: url(../assets/fonts/Inter-SemiBold.woff2) format("woff2"); font-weight: 600; }
+@font-face { font-family: Inter; src: url(../assets/fonts/Inter-Bold.woff2) format("woff2"); font-weight: 700; }
+
+:root {
+  --dark-green: #006A4E;
+  --green: #62CDA8;
+  --light-green: #DAFFED;
+  --white: #FFFFFF;
+  --black: #000000;
+  --surface-card: #F6F8F7;
+  --margin: 80px;
+  --radius-card: 40px;
+}
+
+@page { size: 1920px 1080px; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--white); color: var(--black); font-family: Inter, Arial, sans-serif; font-weight: 500; }
+
+.slide {
+  width: 1920px; height: 1080px; position: relative; overflow: hidden;
+  padding: 64px var(--margin) 0; page-break-after: always; background: var(--white);
+}
+.top { display: flex; justify-content: space-between; align-items: center; height: 40px; margin-bottom: 52px; }
+.logo { height: 34px; }
+.meta, .foot { font-size: 20px; color: var(--black); opacity: .62; }
+.foot { position: absolute; left: var(--margin); right: var(--margin); bottom: 40px; display: flex; justify-content: space-between; }
+
+h1, h2 { font-weight: 700; letter-spacing: -0.02em; }
+em { font-style: normal; color: var(--green); }
+.h { font-size: 60px; line-height: 1.08; margin-bottom: 28px; max-width: 1600px; }
+.h-xl { font-size: 92px; line-height: 1.04; margin: 32px 0 36px; }
+.lead { font-size: 34px; line-height: 1.4; max-width: 900px; }
+.sub { font-size: 26px; line-height: 1.4; max-width: 1640px; margin-bottom: 28px; }
+.small { font-size: 22px; margin-top: 48px; color: var(--dark-green); }
+.note { font-size: 21px; line-height: 1.45; margin: 14px 0 18px; }
+.note.wide { max-width: 1700px; margin-top: 26px; }
+.muted { font-size: 20px; opacity: .7; }
+b { font-weight: 700; }
+
+.rubric {
+  display: inline-block; background: var(--light-green); color: var(--dark-green);
+  font-weight: 600; font-size: 22px; line-height: 1; padding: 11px 22px; border-radius: 999px; margin-bottom: 18px;
+}
+
+.dots { list-style: none; margin-bottom: 26px; }
+.dots li { position: relative; padding-left: 30px; font-size: 24px; line-height: 1.4; margin-bottom: 12px; }
+.dots li::before { content: ""; position: absolute; left: 2px; top: 11px; width: 12px; height: 12px; border-radius: 50%; background: var(--green); }
+
+.cols-3 { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 64px; }
+.cols-2w { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 72px; }
+.cols-2e { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; }
+
+/* Обложка: форма дома справа */
+.cover { display: grid; grid-template-columns: 1fr 760px; gap: 48px; height: 840px; }
+.cover-text { padding-top: 24px; }
+.house { position: relative; margin-top: -30px; height: 850px; }
+.house-shape { position: absolute; inset: 0; width: 100%; height: 100%; }
+.house-stats { position: relative; padding: 205px 110px 0 120px; display: grid; gap: 16px; }
+.house .stat { font-size: 60px; }
+.house .stat-card { padding: 22px 32px; }
+
+.stat-card { background: var(--surface-card); border-radius: var(--radius-card); padding: 26px 34px; }
+.house .stat-card { background: var(--white); }
+.stat-card.soft { background: var(--light-green); margin-top: 22px; }
+.stat { font-size: 76px; line-height: 1; font-weight: 700; letter-spacing: -0.02em; color: var(--dark-green); margin-bottom: 8px; }
+.stat.sm { font-size: 52px; }
+.stat-card p { font-size: 22px; line-height: 1.35; }
+
+/* Таблицы */
+table { border-collapse: collapse; width: 100%; }
+.kv td { font-size: 23px; padding: 12px 0; border-bottom: 1px solid #DCE3E0; }
+.kv td:last-child { text-align: right; font-weight: 700; white-space: nowrap; }
+.grid-t th, .grid-t td { text-align: left; font-size: 21px; padding: 10px 12px 10px 0; border-bottom: 1px solid #DCE3E0; }
+.grid-t th { font-weight: 600; color: var(--dark-green); }
+.grid-t td:first-child { font-weight: 700; }
+.met td:first-child { font-weight: 500; }
+.met td:nth-child(2), .met td:nth-child(3) { font-weight: 700; white-space: nowrap; }
+.met td:nth-child(3) { color: var(--dark-green); }
+
+.seg th { text-align: left; font-size: 20px; font-weight: 600; color: var(--dark-green); padding: 0 24px 12px 0; border-bottom: 2px solid var(--black); }
+.seg td { font-size: 21px; line-height: 1.38; padding: 16px 24px 16px 0; border-bottom: 1px solid #DCE3E0; vertical-align: top; }
+.seg td b { font-size: 22px; }
+.ch td { padding: 11px 24px 11px 0; font-size: 20px; }
+.risk td { padding: 12px 24px 12px 0; }
+
+.mini { display: flex; align-items: center; gap: 12px; height: 26px; }
+.mini-l { width: 92px; font-size: 17px; opacity: .7; }
+.mini-bar { height: 14px; border-radius: 7px; min-width: 4px; }
+.mini-v { font-size: 18px; font-weight: 700; }
+.b1 { background: var(--green); }
+.b2 { background: var(--dark-green); }
+.b3 { background: var(--black); }
+.legend { display: flex; gap: 36px; font-size: 19px; margin-top: 18px; }
+.legend i { display: inline-block; width: 18px; height: 18px; border-radius: 50%; margin-right: 10px; vertical-align: -3px; }
+.top-legend { margin: 0 0 18px 300px; }
+.top-legend span:last-child { margin-left: auto; margin-right: 18px; font-weight: 700; }
+
+/* Бюджет */
+.brow { display: grid; grid-template-columns: 300px 1fr 110px; align-items: center; padding: 12px 0; border-bottom: 1px solid #DCE3E0; }
+.bname { font-size: 23px; font-weight: 700; line-height: 1.25; padding-right: 16px; }
+.bbars { display: grid; gap: 6px; }
+.bar { height: 34px; border-radius: 10px; position: relative; min-width: 30px; }
+.bar span { position: absolute; left: calc(100% + 12px); top: 4px; font-size: 21px; font-weight: 700; white-space: nowrap; }
+.bar.was, i.was { background: var(--green); }
+.bar.now, i.now { background: var(--dark-green); }
+.bdelta { font-size: 30px; font-weight: 700; text-align: right; }
+.bdelta.up { color: var(--dark-green); }
+.bdelta.down { color: var(--black); }
+
+.steps { list-style: none; counter-reset: s; }
+.steps li { counter-increment: s; position: relative; padding-left: 58px; font-size: 23px; line-height: 1.42; margin-bottom: 18px; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--light-green); color: var(--dark-green); font-weight: 700; font-size: 21px; display: grid; place-items: center; }
+
+/* Водопад */
+.wf svg { overflow: visible; display: block; margin: 30px 0 16px; }
+.wl { font: 700 34px Inter, Arial, sans-serif; fill: var(--black); }
+.wn { font: 500 22px Inter, Arial, sans-serif; fill: var(--black); }
+.scs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 6px 0 4px; }
+.sc { background: var(--surface-card); border-radius: 28px; padding: 20px 22px; display: grid; gap: 6px; font-size: 20px; }
+.sc.on { background: var(--light-green); }
+.sc-n { font-size: 44px; font-weight: 700; letter-spacing: -0.02em; color: var(--dark-green); }
+.sc .muted { font-size: 17px; }
+
+.ns { background: var(--light-green); border-radius: var(--radius-card); padding: 28px 36px; margin-bottom: 26px; }
+.ns .rubric { background: var(--white); }
+.ns-t { font-size: 34px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 10px; }
+
+/* Дорожная карта */
+.road { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 34px; }
+.phase { background: var(--surface-card); border-radius: 32px; padding: 26px 28px; display: grid; gap: 10px; align-content: start; }
+.phase:first-child { background: var(--light-green); }
+.ph-n { font-size: 19px; font-weight: 600; color: var(--dark-green); }
+.phase b { font-size: 27px; }
+.phase p { font-size: 20px; line-height: 1.4; }
+</style></head><body>
+
+<section class="slide cover-slide">
+  <header class="top">
+    <img class="logo" src="../assets/brand/bcc-insurance-logo.svg" alt="bcc insurance">
+    <span class="meta">Product Masters · неделя 2 · уровень 3</span>
+  </header>
+  
+<div class="cover">
+  <div class="cover-text">
+    <span class="rubric">Расчётный кейс · e-commerce</span>
+    <h1 class="h-xl">RFM-анализ: на&nbsp;<em>20%</em> меньше маркетинга, на&nbsp;<em>10%</em> больше выручки</h1>
+    <p class="lead">Как перестать платить за покупки, которые случились бы и без нас, и вложить сэкономленное туда, где теряется повторная покупка</p>
+    <p class="small">Product Masters · неделя 2 · уровень 3 (сложный) · октябрь 2026</p>
+  </div>
+  <div class="house">
+    <svg class="house-shape" viewBox="0 0 873 970" preserveAspectRatio="none"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#62CDA8" stop-opacity=".55"/><stop offset=".7" stop-color="#DAFFED"/></linearGradient></defs><path d="M452.94,30.17 C 470.86,30.17 488.00,35.61 502.71,45.78 L 813.36,261.79 C 837.07,278.26 850.58,304.21 850.49,333.10 L 850.49,790.72 C 850.49,790.90 850.49,790.98 850.49,791.16 C 850.49,791.33 850.49,791.41 850.49,791.58 C 850.49,791.93 850.49,792.28 850.49,792.62 L 850.49,792.71 C 850.32,810.64 846.68,827.80 839.76,843.67 C 833.18,858.67 823.92,872.21 812.06,883.85 L 811.89,884.02 L 811.71,884.20 C 800.03,896.01 786.44,905.32 771.38,911.79 C 755.45,918.69 738.23,922.31 720.23,922.48 C 719.88,922.48 719.53,922.48 719.19,922.48 C 719.01,922.48 718.84,922.48 718.75,922.48 L 718.41,922.48 C 718.41,922.48 718.32,922.48 718.23,922.48 L 187.73,922.48 C 187.73,922.48 187.65,922.48 187.56,922.48 L 187.30,922.48 C 187.13,922.48 186.96,922.48 186.87,922.48 C 186.52,922.48 186.17,922.48 185.83,922.48 C 167.83,922.31 150.60,918.69 134.67,911.79 C 119.62,905.24 106.03,896.01 94.34,884.20 L 94.00,883.85 C 82.14,872.21 72.79,858.67 66.30,843.67 C 59.37,827.80 55.74,810.64 55.57,792.71 L 55.57,792.62 C 55.57,792.28 55.57,791.93 55.57,791.58 C 55.57,791.41 55.57,791.24 55.57,791.16 C 55.57,790.98 55.57,790.90 55.57,790.72 L 55.57,371.99 L 55.65,371.99 L 55.65,333.10 C 55.48,304.30 68.98,278.35 92.70,261.79 L 403.17,45.78 C 417.80,35.61 435.02,30.17 452.94,30.17 Z" fill="url(#hg)"/></svg>
+    <div class="house-stats">
+      <div class="stat-card"><div class="stat">−20%</div><p>маркетинговый бюджет<br>30,0 → 24,0 млн ₸ в месяц</p></div>
+      <div class="stat-card"><div class="stat">+10,4%</div><p>выручка в базовом сценарии<br>300,1 → 331,2 млн ₸ в месяц</p></div>
+      <div class="stat-card"><div class="stat">+15,3</div><p>млн ₸ валовой прибыли в месяц<br>экономия + маржа с роста</p></div>
+    </div>
+  </div>
+</div>
+  <footer class="foot"><span>RFM-анализ: меньше бюджета, больше повторных покупок</span><span>01 / 08</span></footer>
+</section>
+
+<section class="slide ">
+  <header class="top">
+    <img class="logo" src="../assets/brand/bcc-insurance-logo.svg" alt="bcc insurance">
+    <span class="meta">Product Masters · неделя 2 · уровень 3</span>
+  </header>
+  
+<h2 class="h">Новые клиенты приходят, но <em>не возвращаются</em></h2>
+<div class="cols-3">
+  <div>
+    <span class="rubric">Ситуация</span>
+    <ul class="dots">
+      <li>12 месяцев истории продаж, приток новых стабилен</li>
+      <li>Последние 2 месяца падает доля повторных покупок</li>
+      <li>Бюджет тратится «на всех одинаково»: массовые промокоды, рассылки и ретаргет по всей базе</li>
+    </ul>
+    <span class="rubric">Гипотезы падения — проверить за 2 недели</span>
+    <ul class="dots">
+      <li>Новые когорты хуже: сменился канал привлечения, пришли охотники за промо</li>
+      <li>Первая покупка разочаровала: доставка, наличие, возвраты</li>
+      <li>Клиенты устали от массовых рассылок и ждут скидку</li>
+    </ul>
+  </div>
+  <div>
+    <span class="rubric">Допущения модели</span>
+    <p class="note">В кейсе нет транзакций, поэтому строю прозрачную модель: каждое число можно заменить фактом в Excel, остальное пересчитается.</p>
+    <table class="kv">
+      <tr><td>Клиентов с покупкой за 12 мес.</td><td>50 000</td></tr>
+      <tr><td>Выручка в месяц</td><td>300,1 млн ₸</td></tr>
+      <tr><td>Маркетинг в месяц</td><td>30,0 млн ₸</td></tr>
+      <tr><td>Доля маркетинга в выручке</td><td>10,0%</td></tr>
+      <tr><td>Новых клиентов в месяц</td><td>8 000</td></tr>
+      <tr><td>Валовая маржа</td><td>30%</td></tr>
+    </table>
+  </div>
+  <div>
+    <span class="rubric">Как считаю RFM</span>
+    <table class="grid-t">
+      <tr><th>Балл</th><th>R — дней с покупки</th><th>F — заказов за год</th></tr>
+      <tr><td>5</td><td>до 14</td><td>8 и больше</td></tr>
+      <tr><td>4</td><td>15–30</td><td>5–7</td></tr>
+      <tr><td>3</td><td>31–60</td><td>3–4</td></tr>
+      <tr><td>2</td><td>61–120</td><td>2</td></tr>
+      <tr><td>1</td><td>больше 120</td><td>1</td></tr>
+    </table>
+    <p class="note">M — квинтили суммы покупок за 12 месяцев: внутри сегмента задаёт приоритет (кому звонить, кому дать лучший оффер). Пересчёт — раз в месяц, чтобы видеть переходы между сегментами.</p>
+  </div>
+</div>
+  <footer class="foot"><span>RFM-анализ: меньше бюджета, больше повторных покупок</span><span>02 / 08</span></footer>
+</section>
+
+<section class="slide ">
+  <header class="top">
+    <img class="logo" src="../assets/brand/bcc-insurance-logo.svg" alt="bcc insurance">
+    <span class="meta">Product Masters · неделя 2 · уровень 3</span>
+  </header>
+  
+<h2 class="h">Пять сегментов — <em>пять разных задач</em></h2>
+<p class="sub">Главный вывод: спящие клиенты — 34% базы и 2% выручки, но получают 20% маркетингового бюджета. Новые клиенты — 38% месячной выручки, здесь не показаны.</p>
+<table class="seg">
+  <colgroup><col style="width:330px"><col style="width:430px"><col style="width:520px"><col></colgroup>
+  <tr><th>Сегмент</th><th>Кто это</th><th>Доля клиентов, выручки и бюджета</th><th>Цель</th></tr>
+  <tr><td><b>Чемпионы</b><br><span class='muted'>R 4–5 · F 4–5</span></td><td>Покупают часто и недавно, дают треть выручки базы</td><td><div class="mini"><span class="mini-l">клиенты</span><span class="mini-bar b1" style="width:48px"></span><span class="mini-v">8%</span></div><div class="mini"><span class="mini-l">выручка</span><span class="mini-bar b2" style="width:130px"></span><span class="mini-v">22%</span></div><div class="mini"><span class="mini-l">бюджет</span><span class="mini-bar b3" style="width:90px"></span><span class="mini-v">15%</span></div></td><td>Удержать без скидок, превратить в амбассадоров</td></tr><tr><td><b>Лояльные</b><br><span class='muted'>R 3–5 · F 3–5</span></td><td>Регулярные покупатели среднего чека</td><td><div class="mini"><span class="mini-l">клиенты</span><span class="mini-bar b1" style="width:90px"></span><span class="mini-v">15%</span></div><div class="mini"><span class="mini-l">выручка</span><span class="mini-bar b2" style="width:108px"></span><span class="mini-v">18%</span></div><div class="mini"><span class="mini-l">бюджет</span><span class="mini-bar b3" style="width:60px"></span><span class="mini-v">10%</span></div></td><td>Рост чека и частоты через персональные рекомендации</td></tr><tr><td><b>Потенциально лояльные</b><br><span class='muted'>R 4–5 · F 1–2</span></td><td>Новые клиенты после 1–2 покупок — здесь теряется повтор</td><td><div class="mini"><span class="mini-l">клиенты</span><span class="mini-bar b1" style="width:150px"></span><span class="mini-v">25%</span></div><div class="mini"><span class="mini-l">выручка</span><span class="mini-bar b2" style="width:87px"></span><span class="mini-v">15%</span></div><div class="mini"><span class="mini-l">бюджет</span><span class="mini-bar b3" style="width:50px"></span><span class="mini-v">8%</span></div></td><td>Довести до второй и третьей покупки за 60 дней</td></tr><tr><td><b>Под угрозой оттока</b><br><span class='muted'>R 1–2 · F 3–5</span></td><td>Раньше покупали часто, но давно не возвращались</td><td><div class="mini"><span class="mini-l">клиенты</span><span class="mini-bar b1" style="width:108px"></span><span class="mini-v">18%</span></div><div class="mini"><span class="mini-l">выручка</span><span class="mini-bar b2" style="width:32px"></span><span class="mini-v">5%</span></div><div class="mini"><span class="mini-l">бюджет</span><span class="mini-bar b3" style="width:30px"></span><span class="mini-v">5%</span></div></td><td>Вернуть ценных клиентов, пока не ушли насовсем</td></tr><tr><td><b>Спящие и потерянные</b><br><span class='muted'>R 1–2 · F 1–2</span></td><td>Одна-две покупки давно, на массовые акции почти не реагируют</td><td><div class="mini"><span class="mini-l">клиенты</span><span class="mini-bar b1" style="width:204px"></span><span class="mini-v">34%</span></div><div class="mini"><span class="mini-l">выручка</span><span class="mini-bar b2" style="width:12px"></span><span class="mini-v">2%</span></div><div class="mini"><span class="mini-l">бюджет</span><span class="mini-bar b3" style="width:120px"></span><span class="mini-v">20%</span></div></td><td>Перестать сжигать бюджет: одна попытка, затем исключение</td></tr>
+</table>
+<div class="legend"><span><i class="b1"></i>доля клиентов</span><span><i class="b2"></i>доля общей выручки</span><span><i class="b3"></i>доля бюджета сейчас</span></div>
+  <footer class="foot"><span>RFM-анализ: меньше бюджета, больше повторных покупок</span><span>03 / 08</span></footer>
+</section>
+
+<section class="slide ">
+  <header class="top">
+    <img class="logo" src="../assets/brand/bcc-insurance-logo.svg" alt="bcc insurance">
+    <span class="meta">Product Masters · неделя 2 · уровень 3</span>
+  </header>
+  
+<h2 class="h">Бюджет: <em>30,0 → 24,0</em> млн ₸ в месяц</h2>
+<div class="cols-2w">
+  <div>
+    <div class="legend top-legend"><span><i class="was"></i>было, млн ₸</span><span><i class="now"></i>стало, млн ₸</span><span>Δ</span></div>
+    
+<div class="brow">
+  <div class="bname">Чемпионы</div>
+  <div class="bbars">
+    <div class="bar was" style="width:135px"><span>4,5</span></div>
+    <div class="bar now" style="width:45px"><span>1,5</span></div>
+  </div>
+  <div class="bdelta down">−3,0</div>
+</div>
+<div class="brow">
+  <div class="bname">Лояльные</div>
+  <div class="bbars">
+    <div class="bar was" style="width:90px"><span>3,0</span></div>
+    <div class="bar now" style="width:60px"><span>2,0</span></div>
+  </div>
+  <div class="bdelta down">−1,0</div>
+</div>
+<div class="brow">
+  <div class="bname">Потенциально лояльные</div>
+  <div class="bbars">
+    <div class="bar was" style="width:75px"><span>2,5</span></div>
+    <div class="bar now" style="width:150px"><span>5,0</span></div>
+  </div>
+  <div class="bdelta up">+2,5</div>
+</div>
+<div class="brow">
+  <div class="bname">Под угрозой оттока</div>
+  <div class="bbars">
+    <div class="bar was" style="width:45px"><span>1,5</span></div>
+    <div class="bar now" style="width:105px"><span>3,5</span></div>
+  </div>
+  <div class="bdelta up">+2,0</div>
+</div>
+<div class="brow">
+  <div class="bname">Спящие и потерянные</div>
+  <div class="bbars">
+    <div class="bar was" style="width:180px"><span>6,0</span></div>
+    <div class="bar now" style="width:30px"><span>1,0</span></div>
+  </div>
+  <div class="bdelta down">−5,0</div>
+</div>
+<div class="brow">
+  <div class="bname">Привлечение новых</div>
+  <div class="bbars">
+    <div class="bar was" style="width:375px"><span>12,5</span></div>
+    <div class="bar now" style="width:330px"><span>11,0</span></div>
+  </div>
+  <div class="bdelta down">−1,5</div>
+</div>
+  </div>
+  <div class="logic">
+    <span class="rubric">Логика</span>
+    <ol class="steps">
+      <li><b>Снимаем деньги там, где нет инкремента.</b> Чемпионы купят и без скидки (−3,0), спящие не реагируют на массовые акции (−5,0), в платном трафике не платим за своих же клиентов (−1,5).</li>
+      <li><b>Вкладываем туда, где решается повтор.</b> Вторая покупка новичков (+2,5) и возврат ценных клиентов под угрозой оттока (+2,0).</li>
+      <li><b>Итог:</b> −10,5 снято, +4,5 вложено, чистая экономия 6,0 млн ₸ = 20%.</li>
+    </ol>
+    <div class="stat-card soft"><div class="stat sm">10,0% → 7,2%</div><p>доля маркетинга в выручке (CRR)</p></div>
+  </div>
+</div>
+  <footer class="foot"><span>RFM-анализ: меньше бюджета, больше повторных покупок</span><span>04 / 08</span></footer>
+</section>
+
+<section class="slide ">
+  <header class="top">
+    <img class="logo" src="../assets/brand/bcc-insurance-logo.svg" alt="bcc insurance">
+    <span class="meta">Product Masters · неделя 2 · уровень 3</span>
+  </header>
+  
+<h2 class="h"><em>Своё действие</em> для каждого сегмента</h2>
+<table class="seg ch">
+  <colgroup><col style="width:300px"><col style="width:560px"><col style="width:520px"><col></colgroup>
+  <tr><th>Сегмент</th><th>Механика</th><th>Каналы</th><th>KPI сегмента</th></tr>
+  <tr><td><b>Чемпионы</b></td><td>Снять общие скидки (купят и без них), дать нематериальные привилегии и реферальную программу</td><td>Push и e-mail в приложении, ранний доступ, закрытые распродажи, реферальная ссылка «приведи друга»</td><td>Частота не ниже 0,85 заказа/мес; конверсия приглашений</td></tr><tr><td><b>Лояльные</b></td><td>Кросс-селл и наборы по истории покупок, порог бесплатной доставки выше текущего среднего чека</td><td>Персональные подборки в e-mail и push, блок «вам подойдёт» на сайте, программа баллов</td><td>Средний чек 16 000 → 16 800 ₸; частота 0,45 → 0,47</td></tr><tr><td><b>Потенциально лояльные</b></td><td>Триггерная цепочка онбординга D+3 / D+14 / D+30, бонус на вторую покупку, установка приложения</td><td>E-mail и push-цепочка, напоминание о пополнении расходников, бонус в приложении, ретаргет на просмотренные товары</td><td>Вторая покупка за 60 дней; частота 0,25 → 0,35</td></tr><tr><td><b>Под угрозой оттока</b></td><td>Win-back с персональным предложением по любимой категории, опрос «почему перестали покупать», звонок топ-клиентам</td><td>Персональный e-mail и SMS, ретаргетинг, звонок колл-центра для клиентов с M 4–5</td><td>Доля вернувшихся за 60 дней; частота 0,12 → 0,18</td></tr><tr><td><b>Спящие и потерянные</b></td><td>Одна недорогая реактивация, после неё — исключение из платного ретаргета и массовых промокодов</td><td>Один e-mail с лучшим предложением, далее только бесплатные каналы</td><td>Бюджет 6 → 1 млн ₸ при потере выручки до 1 млн ₸</td></tr>
+  <tr><td><b>Привлечение</b></td><td>Исключить текущих клиентов из платных аудиторий, look-alike на чемпионах, отключить кампании с CAC выше LTV</td><td>Performance-каналы с исключением базы, look-alike</td><td>CAC и LTV/CAC не хуже текущих; приток новых не ниже −5%</td></tr>
+</table>
+<p class="note wide">Общие правила: не больше двух сообщений в неделю на клиента, бесплатные каналы (push, e-mail) раньше платных (SMS, ретаргет), в каждом сегменте 10% клиентов — контрольная группа без воздействия.</p>
+  <footer class="foot"><span>RFM-анализ: меньше бюджета, больше повторных покупок</span><span>05 / 08</span></footer>
+</section>
+
+<section class="slide ">
+  <header class="top">
+    <img class="logo" src="../assets/brand/bcc-insurance-logo.svg" alt="bcc insurance">
+    <span class="meta">Product Masters · неделя 2 · уровень 3</span>
+  </header>
+  
+<h2 class="h">Выручка: <em>300,1 → 331,2</em> млн ₸ в месяц</h2>
+<div class="cols-2w">
+  <div class="wf"><svg viewBox="0 -50 1190 670" width="100%"><rect x="0" y="403.6" width="140" height="116.4" rx="10" fill="#006A4E"/><text x="0" y="387.6" class="wl">300,1</text><text x="0" y="566" class="wn">Сейчас</text><rect x="170" y="387.9" width="140" height="15.7" rx="10" fill="#62CDA8"/><text x="170" y="371.9" class="wl">+1,4</text><text x="170" y="566" class="wn">Чемпионы</text><rect x="340" y="327.6" width="140" height="60.3" rx="10" fill="#62CDA8"/><text x="340" y="311.6" class="wl">+5,2</text><text x="340" y="566" class="wn">Лояльные</text><rect x="510" y="125.4" width="140" height="202.2" rx="10" fill="#62CDA8"/><text x="510" y="109.4" class="wl">+17,5</text><text x="510" y="566" class="wn">Потенциально</text><text x="510" y="602" class="wn">лояльные</text><rect x="680" y="31.8" width="140" height="93.6" rx="10" fill="#62CDA8"/><text x="680" y="15.8" class="wl">+8,1</text><text x="680" y="566" class="wn">Под угрозой</text><text x="680" y="602" class="wn">оттока</text><rect x="850" y="31.8" width="140" height="11.8" rx="10" fill="#000000"/><text x="850" y="15.8" class="wl">−1,0</text><text x="850" y="566" class="wn">Спящие и</text><text x="850" y="602" class="wn">потерянные</text><rect x="1020" y="43.6" width="140" height="476.4" rx="10" fill="#006A4E"/><text x="1020" y="27.6" class="wl">331,2</text><text x="1020" y="566" class="wn">После</text></svg><p class="muted">Шкала начинается с 290 млн ₸, чтобы были видны вклады сегментов</p></div>
+  <div class="logic">
+    <span class="rubric">Откуда рост</span>
+    <ul class="dots">
+      <li>Главный вклад — вторая покупка новичков: частота 0,25 → 0,35 даёт +17,5 млн ₸</li>
+      <li>Чемпионы без скидок покупают чуть реже (−1,4), но реферальная программа даёт +2,8</li>
+      <li>Спящие теряют 1,0 млн ₸ выручки, зато экономят 5,0 млн ₸ бюджета</li>
+    </ul>
+    <div class="scs"><div class="sc "><b>Пессимистичный</b>
+<span class="sc-n">+5,2%</span>
+<span class="muted">выручка, 50% целевого эффекта</span>
+<span class="muted">+10,7 млн ₸ прибыли/мес</span></div><div class="sc on"><b>Базовый</b>
+<span class="sc-n">+10,4%</span>
+<span class="muted">выручка, 100% целевого эффекта</span>
+<span class="muted">+15,3 млн ₸ прибыли/мес</span></div><div class="sc "><b>Оптимистичный</b>
+<span class="sc-n">+13,5%</span>
+<span class="muted">выручка, 130% целевого эффекта</span>
+<span class="muted">+18,2 млн ₸ прибыли/мес</span></div></div>
+    <p class="note">Пессимистичный сценарий цели по выручке не достигает: если через 6 недель инкремент ниже половины плана, добавляем рычаги (порог доставки, подписка на расходники).</p>
+  </div>
+</div>
+  <footer class="foot"><span>RFM-анализ: меньше бюджета, больше повторных покупок</span><span>06 / 08</span></footer>
+</section>
+
+<section class="slide ">
+  <header class="top">
+    <img class="logo" src="../assets/brand/bcc-insurance-logo.svg" alt="bcc insurance">
+    <span class="meta">Product Masters · неделя 2 · уровень 3</span>
+  </header>
+  
+<h2 class="h">Как доказать эффект: <em>инкремент</em>, а не корреляция</h2>
+<div class="cols-2e">
+  <div>
+    <div class="ns">
+      <span class="rubric">North Star</span>
+      <p class="ns-t">Доля новых клиентов, сделавших вторую покупку за 60 дней</p>
+      <p class="muted">Двигает её именно продукт и CRM, она опережает выручку и прямо отвечает на проблему кейса</p>
+    </div>
+    <table class="grid-t met">
+      <tr><th>Метрика</th><th>Сейчас</th><th>Цель</th></tr>
+      <tr><td>Маркетинговый бюджет, млн ₸/мес</td><td>30,0</td><td>24,0</td></tr>
+      <tr><td>Выручка, млн ₸/мес</td><td>300,1</td><td>331,2</td></tr>
+      <tr><td>Доля маркетинга в выручке (CRR)</td><td>10,0%</td><td>7,2%</td></tr>
+      <tr><td>Выручка на 1 ₸ маркетинга</td><td>10,0 ₸</td><td>13,8 ₸</td></tr>
+      <tr><td>Переход «потенциальные → лояльные» за месяц</td><td colspan="2">замерить в неделю 1–2, цель +30%</td></tr>
+      <tr><td>Инкрементальная выручка к контролю</td><td>—</td><td>≥ 31 млн ₸/мес</td></tr>
+    </table>
+  </div>
+  <div>
+    <span class="rubric">Дизайн эксперимента</span>
+    <ul class="dots">
+      <li><b>Контроль 10% в каждом сегменте</b> — живёт по старой механике. Эффект = разница выручки на клиента «тест − контроль», умноженная на размер сегмента</li>
+      <li><b>8 недель</b> и сравнение завершённых 60-дневных когорт, а не календарных месяцев</li>
+      <li><b>Матрица переходов</b> между RFM-сегментами раз в месяц: кто вырос, кто скатился</li>
+    </ul>
+    <span class="rubric">Защитные метрики</span>
+    <ul class="dots">
+      <li>Валовая маржа после скидок не ниже 30%</li>
+      <li>Отписки от рассылок не выше 0,3% на отправку, жалобы не растут</li>
+      <li>Приток новых клиентов не падает больше чем на 5%</li>
+      <li>Частота у чемпионов не ниже 0,85 — иначе возвращаем персональный оффер</li>
+    </ul>
+  </div>
+</div>
+  <footer class="foot"><span>RFM-анализ: меньше бюджета, больше повторных покупок</span><span>07 / 08</span></footer>
+</section>
+
+<section class="slide ">
+  <header class="top">
+    <img class="logo" src="../assets/brand/bcc-insurance-logo.svg" alt="bcc insurance">
+    <span class="meta">Product Masters · неделя 2 · уровень 3</span>
+  </header>
+  
+<h2 class="h">План на 90 дней и <em>риски</em></h2>
+<div class="road">
+  <div class="phase"><span class="ph-n">Недели 1–2</span><b>Данные и диагноз</b><p>RFM-скоринг базы, когорты по месяцу и каналу первой покупки, дашборд метрик, замер базовых значений вместо допущений</p></div>
+  <div class="phase"><span class="ph-n">Недели 3–4</span><b>Быстрая экономия</b><p>Снять общие скидки чемпионам, исключить спящих и текущих клиентов из платного трафика, запустить цепочку второй покупки</p></div>
+  <div class="phase"><span class="ph-n">Недели 5–8</span><b>Рост повтора</b><p>Win-back для «под угрозой», кросс-селл лояльным, тесты офферов, еженедельный разбор метрик</p></div>
+  <div class="phase"><span class="ph-n">Недели 9–12</span><b>Масштаб</b><p>Оставить механики с доказанным инкрементом, отключить остальные, закрепить новый бюджет</p></div>
+</div>
+<table class="seg risk">
+  <colgroup><col style="width:640px"><col></colgroup>
+  <tr><th>Риск</th><th>Как управляем</th></tr>
+  <tr><td>Чемпионы уйдут без скидок</td><td>Контрольная группа и стоп-правило: если частота падает больше чем на 5%, возвращаем персональный оффер</td></tr>
+  <tr><td>Платим за покупки, которые были бы и так</td><td>Эффект считаем только к контрольной группе, без неё механика не масштабируется</td></tr>
+  <tr><td>Сокращение привлечения уменьшит приток</td><td>Режем только показы своим клиентам и кампании с CAC выше LTV, приток новых — защитная метрика</td></tr>
+  <tr><td>Допущения модели не совпадут с фактом</td><td>В неделю 2 подставляем реальные данные в Excel-модель и пересматриваем цели до запуска</td></tr>
+</table>
+  <footer class="foot"><span>RFM-анализ: меньше бюджета, больше повторных покупок</span><span>08 / 08</span></footer>
+</section>
+</body></html>
