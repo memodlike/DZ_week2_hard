@@ -121,6 +121,22 @@ tbody tr:hover { background: var(--bg); }
 .ins li { counter-increment: i; position: relative; padding-left: 40px; font-size: 15px; }
 .ins li::before { content: counter(i); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent-ink); color: var(--bg); font-weight: 700; font-size: 13px; display: grid; place-items: center; }
 .ins b { font-variant-numeric: tabular-nums; }
+.promo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 20px; }
+.pform { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; }
+.pform label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); font-weight: 600; min-width: 0; }
+.pform select, .pform input[type=number] { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 9px 12px; font-size: 14px; color: var(--fg); width: 100%; }
+.pform .chk { grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--fg); font-weight: 500; }
+.pcalc { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.pcalc .kpi { background: var(--bg); }
+.pcalc .kpi b { font-size: 22px; }
+.msg { background: var(--bg); border-radius: 16px; padding: 12px 14px; font-size: 14px; }
+.msg p { margin: 4px 0 0; }
+.pwarn { margin: 0; color: var(--warn); font-weight: 600; font-size: 14px; }
+.btn { background: var(--accent-ink); color: var(--bg); border: none; border-radius: 999px; padding: 11px 20px; font-weight: 700; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent-ink); border: 1.5px solid var(--accent-ink); padding: 6px 12px; font-size: 13px; }
+.badge { display: inline-block; margin-left: 6px; font-size: 11px; font-weight: 700; color: var(--accent-ink); background: var(--bg-soft); border-radius: 999px; padding: 2px 8px; }
+.code { font-family: ui-monospace, Menlo, monospace; font-weight: 700; letter-spacing: .05em; }
+@media (max-width: 560px) { .pform { grid-template-columns: 1fr; } }
 .src { display: grid; gap: 8px; font-size: 14px; }
 .src li { margin-bottom: 4px; }
 .src a { color: var(--accent-ink); word-break: break-word; }
@@ -211,6 +227,32 @@ footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10
       <tbody id="rows"></tbody>
     </table></div>
     <div class="pager"><span class="muted" id="count"></span><span style="display:flex;gap:8px"><button id="prev" type="button">Назад</button><button id="next" type="button">Дальше</button></span></div>
+  </section>
+
+  <section class="panel" id="promo">
+    <header><h2>Промокоды и рассылки</h2><span class="pill warn">Демо: сообщения не уходят реальным людям</span></header>
+    <div class="promo-grid">
+      <form id="pf" class="pform">
+        <label for="p-seg">Кому<select id="p-seg"></select></label>
+        <label for="p-ch">Канал<select id="p-ch"><option value="push">Push в Kaspi.kz</option><option value="sms">SMS</option><option value="email">E-mail</option></select></label>
+        <label for="p-type">Оффер<select id="p-type"><option value="pct">Скидка, %</option><option value="ship">Бесплатная доставка</option><option value="bonus">Бонус, ₸</option></select></label>
+        <label for="p-val">Размер<input id="p-val" type="number" min="1" max="50000" value="10"></label>
+        <label for="p-min">Мин. заказ, ₸<input id="p-min" type="number" min="0" step="500" value="7000"></label>
+        <label for="p-days">Действует, дней<input id="p-days" type="number" min="1" max="60" value="7"></label>
+        <label class="chk" for="p-ctrl"><input id="p-ctrl" type="checkbox" checked> Контрольная группа 10% (без промокода)</label>
+        <label class="chk" for="p-cap"><input id="p-cap" type="checkbox" checked> Не чаще 1 промокода в 7 дней на клиента</label>
+      </form>
+      <div class="pcalc">
+        <div class="kpis" id="p-kpis"></div>
+        <div class="msg"><span class="muted">Текст сообщения</span><p id="p-msg"></p></div>
+        <p class="pwarn" id="p-warn" hidden></p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="p-send" type="button">Отправить кампанию</button><span class="muted" id="p-done" role="status"></span></div>
+      </div>
+    </div>
+    <div class="tablebox"><table>
+      <thead><tr><th>Когда</th><th>Сегмент</th><th>Канал</th><th>Оффер</th><th>Отправлено</th><th>Контроль</th><th>Пропущено</th><th>Бюджет, ₸</th><th>Ожид. выручка, ₸</th><th></th></tr></thead>
+      <tbody id="p-log"><tr><td colspan="10" class="muted">Кампаний ещё нет. Выберите сегмент и нажмите «Отправить кампанию».</td></tr></tbody>
+    </table></div>
   </section>
 
   <section class="panel">
@@ -370,6 +412,93 @@ function renderInsights(list) {
   $("ins-sub").textContent = `${PERIOD_NAME[state.year]} · ${fmt(list.length)} клиентов в выборке`;
 }
 
+// ---------- Промокоды (демо: генерация кодов и журнал в браузере, без реальной отправки)
+const RESP = { champ: 0.25, loyal: 0.18, new: 0.15, potential: 0.12, attention: 0.10, risk: 0.08, sleep: 0.03 };
+const SEG_OFFER = { champ: ["ship", 0], loyal: ["bonus", 1500], new: ["pct", 15], potential: ["pct", 10], attention: ["ship", 0], risk: ["pct", 20], sleep: ["pct", 10] };
+const CH_COST = { push: 0, sms: 12, email: 1 };
+const CH_NAME = { push: "Push в Kaspi.kz", sms: "SMS", email: "E-mail" };
+const PROMO = { log: [], sent: {} };
+try { Object.assign(PROMO, JSON.parse(localStorage.getItem("mg-promo") || "{}")); } catch (e) {}
+const savePromo = () => { try { localStorage.setItem("mg-promo", JSON.stringify(PROMO)); } catch (e) {} };
+const ALPH = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function code(seg) { let s = ""; const a = new Uint32Array(6); crypto.getRandomValues(a); for (const v of a) s += ALPH[v % ALPH.length]; return `MG-${seg.toUpperCase().slice(0, 4)}-${s}`; }
+function offerText(o) { return o.type === "pct" ? `скидка ${o.val}%` : o.type === "bonus" ? `бонус ${fmt(o.val)} ₸` : "бесплатная доставка"; }
+function promoForm() {
+  return { seg: $("p-seg").value, ch: $("p-ch").value, type: $("p-type").value, val: +$("p-val").value || 0,
+    min: +$("p-min").value || 0, days: +$("p-days").value || 7, ctrl: $("p-ctrl").checked, cap: $("p-cap").checked };
+}
+function promoAudience(o) {
+  const pool = withSeg(base(), true).filter((c) => c.seg.id === o.seg).sort((a, b) => a.id.localeCompare(b.id));
+  const now = Date.now();
+  const capped = o.cap ? pool.filter((c) => PROMO.sent[c.id] && now - PROMO.sent[c.id].ts < 7 * DAY) : [];
+  const ok = pool.filter((c) => !capped.includes(c));
+  const ctrl = o.ctrl ? ok.filter((c) => parseInt(c.id.slice(1), 10) % 10 === 0) : [];
+  return { pool, capped, ctrl, send: ok.filter((c) => !ctrl.includes(c)) };
+}
+function promoEconomics(list, o) {
+  const r = RESP[o.seg] ?? 0.1;
+  const avg = list.length ? list.reduce((s, c) => s + c.avg_check, 0) / list.length : 0;
+  const uses = list.length * r;
+  const perUse = o.type === "pct" ? avg * o.val / 100 : o.type === "bonus" ? o.val : 900; // доставка ≈ 900 ₸
+  const cost = uses * perUse + list.length * CH_COST[o.ch];
+  return { r, uses, cost, revenue: uses * Math.max(avg, o.min) };
+}
+function renderPromo() {
+  const o = promoForm();
+  const a = promoAudience(o);
+  const e = promoEconomics(a.send, o);
+  const segName = SEGMENTS.find((s) => s.id === o.seg).name;
+  $("p-kpis").innerHTML = [
+    [fmt(a.send.length), "получат промокод"], [fmt(a.ctrl.length), "в контрольной группе"],
+    [Math.round(e.r * 100) + "%", "ожидаемая активация"], [fmt(e.cost) + " ₸", "бюджет кампании"],
+    [fmt(e.revenue) + " ₸", "ожидаемая выручка"], [e.cost ? (e.revenue / e.cost).toFixed(1).replace(".", ",") + "×" : "—", "выручка на 1 ₸"],
+  ].map(([b, s]) => `<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join("");
+  const sample = a.send[0];
+  $("p-msg").textContent = `${sample ? sample.name.split(" ")[0] : "Айгерим"}, для вас ${offerText(o)} на заказ в Magnum от ${fmt(o.min)} ₸. Промокод ${code(o.seg).replace(/-[A-Z0-9]+$/, "-XXXXXX")} действует ${o.days} дн. Заказать в Kaspi.kz → Magnum.`;
+  const warn = o.seg === "champ" && o.type === "pct" ? "Чемпионы покупают и без скидки: по решению кейса им лучше дать привилегию (бесплатную доставку, ранний доступ), а не процент."
+    : o.seg === "sleep" && o.ch === "sms" ? "Спящим SMS невыгодно: отклик около 3%. По плану — один бесплатный канал (push или e-mail)."
+    : a.capped.length ? `Пропущено клиентов: ${fmt(a.capped.length)}. Им уже отправляли промокод за последние 7 дней.` : "";
+  $("p-warn").hidden = !warn; $("p-warn").textContent = warn;
+  $("p-send").disabled = !a.send.length;
+  $("p-send").textContent = a.send.length ? `Отправить кампанию: ${fmt(a.send.length)} · ${segName}` : "Нет получателей под эти фильтры";
+}
+function sendPromo(list, o, extra = {}) {
+  const when = new Date().toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  const codes = list.map((c) => { const cd = code(o.seg); PROMO.sent[c.id] = { code: cd, offer: offerText(o), when, ts: Date.now() }; return [c.id, c.name, cd]; });
+  const e = promoEconomics(list, o);
+  PROMO.log.unshift({ when, seg: o.seg, ch: o.ch, offer: offerText(o), n: list.length, ctrl: extra.ctrl || 0, capped: extra.capped || 0,
+    cost: Math.round(e.cost), revenue: Math.round(e.revenue), codes: codes.slice(0, 2000) });
+  PROMO.log = PROMO.log.slice(0, 30);
+  savePromo(); renderLog(); render();
+}
+function renderLog() {
+  $("p-log").innerHTML = PROMO.log.length ? PROMO.log.map((l, i) => `<tr><td>${l.when}</td><td>${SEGMENTS.find((s) => s.id === l.seg).name}</td><td>${CH_NAME[l.ch]}</td><td>${l.offer}</td>
+    <td>${fmt(l.n)}</td><td>${fmt(l.ctrl)}</td><td>${fmt(l.capped)}</td><td>${fmt(l.cost)}</td><td>${fmt(l.revenue)}</td>
+    <td><button class="btn ghost" data-copy="${i}" type="button">Копировать коды</button></td></tr>`).join("")
+    : `<tr><td colspan="10" class="muted">Кампаний ещё нет. Выберите сегмент и нажмите «Отправить кампанию».</td></tr>`;
+}
+$("p-seg").innerHTML = SEGMENTS.map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
+$("p-seg").value = "risk";
+const applyOffer = () => { const o = SEG_OFFER[$("p-seg").value]; $("p-type").value = o[0]; $("p-val").value = o[1] || 10; };
+applyOffer();
+$("p-seg").onchange = () => { applyOffer(); renderPromo(); };
+$("pf").addEventListener("input", renderPromo);
+$("pf").addEventListener("submit", (e) => e.preventDefault());
+$("p-send").onclick = () => {
+  const o = promoForm(); const a = promoAudience(o);
+  if (!a.send.length) return;
+  sendPromo(a.send, o, { ctrl: a.ctrl.length, capped: a.capped.length });
+  $("p-done").textContent = `Отправлено (демо): ${fmt(a.send.length)} промокодов. Коды — в журнале ниже.`;
+};
+$("p-log").addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-copy]"); if (!b) return;
+  const l = PROMO.log[+b.dataset.copy];
+  const text = "id;клиент;промокод\n" + l.codes.map((r) => r.join(";")).join("\n");
+  try { await navigator.clipboard.writeText(text); b.textContent = "Скопировано"; }
+  catch (err) { b.textContent = "Не удалось скопировать"; }
+  setTimeout(() => (b.textContent = "Копировать коды"), 1800);
+});
+
 function renderSegs(list) {
   const rev = list.reduce((s, c) => s + c.revenue, 0) || 1;
   $("segs").innerHTML = SEGMENTS.map((s) => {
@@ -458,7 +587,7 @@ function renderTable(list) {
   state.page = Math.min(state.page, pages - 1);
   const slice = rows.slice(state.page * PAGE, state.page * PAGE + PAGE);
   $("rows").innerHTML = slice.map((c) => `<tr data-id="${c.id}" tabindex="0">
-    <td><b>${esc(c.name)}</b> <span class="muted">${c.id}</span></td><td>${esc(c.city)}</td>
+    <td><b>${esc(c.name)}</b> <span class="muted">${c.id}</span>${PROMO.sent[c.id] ? `<span class="badge" title="Промокод ${PROMO.sent[c.id].code}">промокод</span>` : ""}</td><td>${esc(c.city)}</td>
     <td><span class="tag"><i class="dot" style="background:${c.seg.color}"></i>${c.segment}</span></td>
     <td class="score">${c.rfm}</td><td>${fmt(c.recency_days)}</td><td>${fmt(c.orders)}</td><td>${fmt(c.revenue)}</td><td>${fmt(c.avg_check)}</td></tr>`).join("")
     || `<tr><td colspan="8" class="muted">Под эти фильтры клиентов нет. Нажмите «Сбросить всё».</td></tr>`;
@@ -489,10 +618,15 @@ function openCustomer(id) {
       <div class="fact" style="grid-column:1/-1"><span>Любимая категория и поставщик</span><b>${esc(c.top_category)} · ${esc(d ? d.name : c.top_distributor)}</b></div>
     </div>
     <div style="display:grid;gap:6px"><b>Заказы по месяцам</b>${spark}</div>
-    <div class="action"><b>Следующее действие</b><span>${c.seg.action}</span><span class="muted" style="font-size:13px">Метрика: ${c.seg.kpi}</span></div>`;
+    <div class="action"><b>Следующее действие</b><span>${c.seg.action}</span><span class="muted" style="font-size:13px">Метрика: ${c.seg.kpi}</span></div>
+    <div class="action" style="background:var(--card)"><b>Персональный промокод</b>${PROMO.sent[c.id]
+      ? `<span>Отправлен: <span class="code">${PROMO.sent[c.id].code}</span> · ${PROMO.sent[c.id].offer} · ${PROMO.sent[c.id].when}</span>`
+      : `<span class="muted" style="font-size:13px">Оффер подобран под сегмент. Сообщение не уходит реальному человеку (демо).</span><button class="btn ghost" id="one-send" type="button" style="justify-self:start">Отправить промокод</button>`}</div>`;
   $("drawer").hidden = false;
   $("close").focus();
   $("close").onclick = () => { $("drawer").hidden = true; };
+  const one = $("one-send");
+  if (one) one.onclick = () => { const o = SEG_OFFER[c.seg.id]; sendPromo([c], { seg: c.seg.id, ch: "push", type: o[0], val: o[1], min: 7000, days: 7, single: true }); openCustomer(c.id); };
 }
 
 function render() {
@@ -506,6 +640,8 @@ function render() {
   renderBars($("cities"), groupBy(withSeg(base("city")), (c) => c.city).map((g) => ({ ...g, t: g.k })), "city", state.city);
   renderBars($("dists"), groupBy(withSeg(base("dist")), (c) => c.top_distributor).map((g) => ({ ...g, t: DIST[g.k] ? DIST[g.k].name : g.k })), "dist", state.dist);
   renderTable(scoped);
+  if (state.seg && $("p-seg").value !== state.seg) { $("p-seg").value = state.seg; applyOffer(); }
+  renderPromo();
   $("f-year").value = state.year; $("f-city").value = state.city; $("f-channel").value = state.channel; $("f-dist").value = state.dist;
 }
 
@@ -540,6 +676,7 @@ $("prev").onclick = () => { state.page--; render(); };
 $("next").onclick = () => { state.page++; render(); };
 $("reset").onclick = () => { Object.assign(state, { city: "", channel: "", dist: "", q: "", seg: "", cell: "", preset: "", page: 0 }); $("f-q").value = ""; render(); };
 
+renderLog();
 $("playbook").innerHTML = SEGMENTS.map((s) => `<div class="play"><h3><i class="dot" style="width:10px;height:10px;border-radius:50%;background:${s.color}"></i>${s.name}</h3><p>${s.action}</p><p class="muted" style="font-size:13px">Метрика: ${s.kpi}</p></div>`).join("");
 $("sources").innerHTML = SOURCES;
 applyPeriod(state.year);
