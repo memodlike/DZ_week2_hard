@@ -2,7 +2,7 @@
 
 **RFM-анализ: на 20% меньше маркетинга, на 10% больше выручки.** Расчётный кейс e-commerce: как с помощью RFM-сегментации перераспределить бюджет, выбрать каналы для ключевых сегментов и доказать эффект метриками.
 
-## [PDF для сдачи (8 слайдов)](submission/RFM_Week2_Hard_bcc.pdf)
+## [PDF для сдачи (8 слайдов)](submission/RFM_Week2_Hard_memodlike.pdf)
 
 ![Обложка](submission/slide-01.png)
 
@@ -40,9 +40,9 @@
 - `docs/solution.md` — решение текстом
 - `model/` — Excel-модель, `model.json`, `segments.csv`
 - `scripts/` — модель (Python), сборка слайдов (HTML), рендер в PDF (Playwright)
-- `assets/` — шрифт Inter и логотип из дизайн-системы bcc insurance
+- `assets/` — шрифт Inter и графика обложки
 
-Оформление — по брендбуку bcc insurance: белый фон, акцент Green в крупных словах, Dark Green для мелкого акцентного текста, Inter Bold + Medium, выравнивание по левому краю, форма дома на обложке.
+Автор: **@memodlike** (Instagram). Оформление: белый фон, акцент Green в крупных словах, Dark Green для мелкого акцентного текста, Inter Bold + Medium, выравнивание по левому краю.
 
 ## Сборка
 

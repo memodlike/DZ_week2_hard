@@ -1,6 +1,6 @@
 """Собирает build/slides.html (8 слайдов 1920×1080) из model/model.json.
 
-Оформление — по брендбуку bcc insurance: белый фон, чёрный текст, акцент
+Оформление: белый фон, чёрный текст, акцент
 Green только в крупных словах, мелкий акцентный текст — Dark Green,
 Inter Bold + Medium, всё по левому краю, без капса и эмодзи.
 """
@@ -43,7 +43,7 @@ def slide(n: int, body: str, cls: str = "") -> str:
     return f"""
 <section class="slide {cls}">
   <header class="top">
-    <img class="logo" src="../assets/brand/bcc-insurance-logo.svg" alt="bcc insurance">
+    <span class="author">@memodlike</span>
     <span class="meta">Product Masters · неделя 2 · уровень 3</span>
   </header>
   {body}

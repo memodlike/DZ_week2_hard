@@ -24,7 +24,7 @@ const overflow = await page.evaluate(() =>
 );
 if (overflow.length) console.warn("Возможное наложение на подвал:", overflow);
 
-await page.pdf({ path: path.join(out, "RFM_Week2_Hard_bcc.pdf"), width: "1920px", height: "1080px", printBackground: true });
+await page.pdf({ path: path.join(out, "RFM_Week2_Hard_memodlike.pdf"), width: "1920px", height: "1080px", printBackground: true });
 
 const slides = await page.$$(".slide");
 for (const [i, s] of slides.entries()) {
